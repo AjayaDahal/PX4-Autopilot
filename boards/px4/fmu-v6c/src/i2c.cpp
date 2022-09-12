@@ -38,3 +38,18 @@ constexpr px4_i2c_bus_t px4_i2c_buses[I2C_BUS_MAX_BUS_ITEMS] = {
 	initI2CBusExternal(2),
 	initI2CBusInternal(4),
 };
+
+#ifdef BOARD_OVERRIDE_I2C_TREAT_SENSOR_AS_INTERNAL
+bool i2c_treat_sensor_as_internal(uint32_t device_id)
+{
+	// The internal baro and mag on Pixhawk 6C are on an external
+	// bus. On rev 0, the bus is actually exposed externally, on
+	// rev 1+, it is properly internal, however, still marked as
+	// external for compatibility.
+	if (device_id == 396321 || device_id == 4028193) {
+		return true;
+	}
+
+	return false;
+}
+#endif
