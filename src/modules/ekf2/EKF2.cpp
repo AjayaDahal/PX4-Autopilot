@@ -1002,7 +1002,10 @@ void EKF2::PublishInnovations(const hrt_abstime &timestamp)
 	_estimator_innovations_pub.publish(innovations);
 
 	// calculate noise filtered velocity innovations which are used for pre-flight checking
-	if (!_ekf.control_status_flags().in_air) {
+	vehicle_status_s vehicle_status;
+	_status_sub.copy(&vehicle_status);
+
+	if (vehicle_status.arming_state != vehicle_status_s::ARMING_STATE_ARMED) {
 		// TODO: move to run before publications
 		_preflt_checker.setUsingGpsAiding(_ekf.control_status_flags().gps);
 		_preflt_checker.setUsingFlowAiding(_ekf.control_status_flags().opt_flow);
